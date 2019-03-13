@@ -1,0 +1,19 @@
+
+html,body{
+    color: #000;
+}
+ul,li{
+    list-style: none;
+}
+li{
+    float: left;
+}
+a{
+    text-decoration: none;
+}
+li,span{
+    display: inline-block;
+    width: 200px;
+    line-height:32px;
+    text-align: center;
+}

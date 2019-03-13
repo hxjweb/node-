@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Page Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" media="screen" href="index.css" />
+</head>
+<body>
+    <div>
+        <span>姓名</span>
+        <input type="text" id="userName">
+    </div>
+    <div>
+        <span>年龄</span>
+        <input type="text" id="userAge">
+    </div>
+    <div>
+        <span>电话</span>
+        <input type="text" id="userPhone">
+    </div>
+    <div>
+        <span>住址</span>
+        <input type="text" id="userAddress">
+    </div>
+    <div>
+        <input type="submit" name="提交" id="submit">
+        <input type="reset" name="注销">
+    </div>
+    <script src="./ajax.js"></script>
+    <script>
+        String.prototype.queryURLParameter = function(){
+            var obj = {},
+                reg = /([^?=&#]+)=([^?=&#])/g;
+            this.replace(reg,function(){
+                var key = arguments[1],
+                    value = arguments[2];
+                obj[key] = value;
+            })
+            return obj;
+        }
+        //获取页面地址
+        var urlObj = window.location.href.queryURLParameter();
+        var customId = urlObj.id,
+            flag = typeof customId === 'undefined' ? false :true;
+        if(flag){
+            ajax({
+                url:'/getInfo?id='+customId,
+                success:function(jsonData){
+                    if(jsonData && jsonData.code == 0){
+                        userName.value = jsonData.data.name;
+                        userAge.value = jsonData.data.age;
+                        userPhone.value = jsonData.data.phone;
+                        userAddress.value = jsonData.data.address;
+                        return;
+                    }
+                    alert(jsonData.msg);
+                }
+            })
+        }
+        var userName = document.getElementById('userName'),
+            userAge = document.getElementById('userAge'),
+            userAddress = document.getElementById('userAddress'),
+            userPhone = document.getElementById('userPhone'),
+            submit = document.getElementById('submit');
+        submit.onclick = function(){
+            var obj = {
+                name:userName.value,
+                age:userAge.value,
+                phone:userPhone.value,
+                address:userAddress.value,
+            };
+            if(flag){
+                obj.id = customId;
+                ajax({
+                    url:'/editInfo',
+                    type:'post',
+                    data:JSON.stringify(obj),
+                    success:function(jsonData){
+                        if(jsonData && jsonData.code == 0){
+                            window.location.href = 'index.html';
+                            return;
+                        }
+                        alert(jsonData.msg);
+                    }
+                })
+                return;
+            }
+            ajax({
+                url:'/addInfo',
+                type:'post',
+                data:JSON.stringify(obj),
+                success:function(jsonData){
+                    if(jsonData && jsonData.code == 0){
+                        window.location.href = 'index.html';
+                        return;
+                    }
+                    alert(msg);
+                }
+            })
+        }
+    </script>
+</body>
+</html>

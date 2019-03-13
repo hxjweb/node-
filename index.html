@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Page Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" media="screen" href="./index.css" />
+    <script src="server.js"></script>
+</head>
+<body>
+        <div>
+            <a href="./add.html">增加客户</a>
+            <h2>
+                <span>ID</span>
+                <span>姓名</span>
+                <span>年龄</span>
+                <span>电话</span>
+                <span>地址</span>
+                <span>操作</span>
+            </h2>
+            <ul id="list">
+            </ul>
+        </div>
+
+        <script src="./require.js"></script>
+        <script src="./ajax.js"></script>
+        <script>
+            //获取客户信息
+            var str = '';
+            var oList = document.getElementById('list');
+            function getList(){
+                ajax({
+                    url:'/getList',
+                    success:function(data){
+                        for(var i=0,len=data.data.length;i<len;i++){
+                            var curData = data.data[i];
+                            console.log(curData);
+                            str += '<li>';
+                            str += '<span>'+curData.id+'</span>';
+                            str += '<span>'+curData.name+'</span>';
+                            str += '<span>'+curData.age+'</span>';
+                            str += '<span>'+curData.phone+'</span>';
+                            str += '<span>'+curData.address+'</span>';
+                            str += '<span>';
+                            str += '<a href="add.html?id='+curData.id+'">修改</a>';
+                            str += '<a href="javascript:;" customId="'+curData.id+'">删除</a>';
+                            str += '</span>';
+                            str += '</li>';
+                        }
+                        oList.innerHTML = str;
+                    }
+                })
+            }
+            getList();
+
+            //删除客户信息
+            function removeCustom(){
+                oList.onclick = function(e){
+                    e = e || window.event;
+                    var tar = e.target || e.srcElement,
+                        tarTag = tar.tagName.toUpperCase();
+                    if(tarTag === 'A' && tar.innerHTML === '删除'){
+                        var customId = tar.getAttribute('customId'),
+                            confirmFlag = window.confirm('确定要删除ID为['+customId+']的客户吗?');
+                        if(confirmFlag){
+                            ajax({
+                                url:'/removeInfo?id='+customId,
+                                success:function(jsonData){
+                                    if(jsonData && jsonData.code == 0){
+                                        oList.removeChild(tar.parentNode.parentNode)
+                                        return;
+                                    }
+                                    alert(jsonData.msg);
+                                }
+                            })
+                        }
+                    }
+                }
+            }
+            removeCustom();
+        </script>
+</body>
+</html>
