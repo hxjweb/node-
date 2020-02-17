@@ -22,6 +22,7 @@ var server = http.createServer(function(req,res){
             var conFile = fs.readFileSync('.'+pathname,'utf-8');
             //重写请求头
             res.writeHead(200,{'content-type':suffixMIME+';charset=utf-8;'});
+            //将conFile返回给客户端
             res.end(conFile);
         }catch(e){
             res.writeHead(404,{'content-type':'text/plain;charset=utf-8;'});
